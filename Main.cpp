@@ -6,26 +6,26 @@
 #include"VAO.h"
 #include"VBO.h"
 #include"EBO.h"
-
+#include"Texture.h"
+#include<filesystem>
+namespace fs = std::filesystem;
 
 
 // Vertices coordinates
 GLfloat vertices[] =
-{//COORDONNEES XYZ                                  // COULEURS RGB                        
-	-0.5f, -0.5f * float(sqrt(3)) / 3, 0.0f,		0.8f,0.3f,0.02f,// Coin bas gauche
-	0.5f, -0.5f * float(sqrt(3)) / 3, 0.0f,			0.8f,0.3f,0.02f,// Coins bas droit
-	0.0f, 0.5f * float(sqrt(3)) * 2 / 3, 0.0f,		0.8f,0.45f,0.02f,// Coin haut
-	-0.25f, 0.5f * float(sqrt(3)) / 6, 0.0f,		0.9f,0.45f,0.92f,// Coin interieur gauche
-	0.25f , 0.5f * float(sqrt(3)) / 6, 0.0f,		0.9f,0.3f,0.92f,// Coin interieur droit
-	0.0f, -0.5f * float(sqrt(3)) / 3, 0.0f  ,		0.8f,0.3f,0.92f,// Interieur bas
+{	//COORDONNEES XYZ        Couleur RGb         Texture coord                        
+	-0.5f, -0.5f, 0.0f,	    1.0f, 0.0f, 0.0f,	0.0f, 0.0f, //Coin bas gauche
+	-0.5f,  0.5f, 0.0f,     0.0f, 1.0f, 0.0f,	0.0f, 1.0f, // Coin haut gauche
+	 0.5f,  0.5f, 0.0f,     0.0f, 0.0f, 1.0f,	1.0f, 1.0f, // COin haut droit
+	 0.5f, -0.5f, 0.0f,     1.0f, 1.0f, 1.0f,	1.0f, 0.0f  // Coin bas droit
+
 };
 
 // Indices for vertices order
 GLuint indices[] =
 {
-	0, 3, 5, // Triangle gauche
-	3, 2, 4, // Triangle droit
-	5, 4, 1 // Traingle haut
+ 0,2,1,
+ 0,3,2
 };
 
 
@@ -46,7 +46,7 @@ int main()
 	// Erreur au cas ou la fenetre ne se cree pas
 	if (window == NULL)
 	{
-		std::cout << "Failed to create GLFW window" << std::endl;
+		std::cout << "Echec creation fenetre" << std::endl;
 		glfwTerminate();
 		return -1;
 	}
@@ -75,8 +75,9 @@ int main()
 	EBO EBO1(indices, sizeof(indices));
 
 	// Lie VBO to VAO
-	VAO1.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 6 * sizeof(float), (void*)0);
-	VAO1.LinkAttrib(VBO1, 1, 3, GL_FLOAT, 6 * sizeof(float), (void*)(3* sizeof(float)));
+	VAO1.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 8 * sizeof(float), (void*)0);
+	VAO1.LinkAttrib(VBO1, 1, 3, GL_FLOAT, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+	VAO1.LinkAttrib(VBO1, 2, 2, GL_FLOAT, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 	// Unbind all to prevent accidentally modifying them
 	VAO1.Unbind();
 	VBO1.Unbind();
@@ -85,6 +86,22 @@ int main()
 	//Recupere l'emplacement de l'uniforme "scale" dans le shader
 	GLuint uniID = glGetUniformLocation(shaderProgram.ID, "scale");
 	
+
+
+	std::string parentDir = (fs::current_path().fs::path::parent_path()).string();
+	std::string texPath = "\\OpenGLSmallEngine\\Resources\\Texture\\";
+
+	std::string fullPath = parentDir + texPath + "cat_thumbup.png";
+	std::cout << "Chemin complet vers la texture : " << fullPath << std::endl;
+	if (!fs::exists(fullPath)) {
+		std::cerr << "ERREUR : Impossible de trouver l'image à " << fullPath << std::endl;
+	}
+	Texture popCat(fullPath.c_str(), GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
+
+	popCat.texUnit(shaderProgram, "tex0", 0);
+
+
+
 	while (!glfwWindowShouldClose(window))
 	{
 		// Couleur du fond
@@ -95,10 +112,12 @@ int main()
 		shaderProgram.Activate();
 		//Assignbe une valeur a l'uniforme dois toujours etre fait apres avoir activer le shader
 		glUniform1f(uniID, 0.5f);
+		//On bind la texture
+		popCat.Bind();
 		// Bind the VAO so OpenGL knows to use it
 		VAO1.Bind();
 		// Draw primitives, number of indices, datatype of indices, index of indices
-		glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		// Swap the back buffer with the front buffer
 		glfwSwapBuffers(window);
 		// Take care of all GLFW events
@@ -111,6 +130,7 @@ int main()
 	VAO1.Delete();
 	VBO1.Delete();
 	EBO1.Delete();
+	popCat.Delete();
 	shaderProgram.Delete();
 	// Delete window before ending the program
 	glfwDestroyWindow(window);
