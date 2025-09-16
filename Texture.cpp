@@ -19,12 +19,12 @@ Texture::Texture(const char* image, GLenum texType, GLenum slot, GLenum format, 
 	glBindTexture(texType, ID);
 
 	// Configure l'algorithme de filtrage de la texture (linear, nearest, etc..)
-	glTexParameteri(texType, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
-	glTexParameteri(texType, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(texType, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(texType, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	// Configure la facon ou la texture se repete (clamp to edge, repeat, mirrored repeat, etc..)
-	glTexParameteri(texType, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(texType, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(texType, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+	glTexParameteri(texType, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 
 
 	// Assigne l'image a l'objet texture
