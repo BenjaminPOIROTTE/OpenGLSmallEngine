@@ -47,7 +47,7 @@ int main()
 
 	//chemin textures
 	std::string parentDir = (fs::current_path().fs::path::parent_path()).string();
-	std::string modelPath = "/OpenGLSmallEngine/Resources/Model/Bunny/scene.gltf";
+	std::string modelPath = "/OpenGLSmallEngine/Resources/Model/Ronflex/ronflex.gltf";
 
 	Model model((parentDir + modelPath).c_str());
 
@@ -87,29 +87,29 @@ int main()
 		// Clean the back buffer and depth buffer
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// Handles camera inputs
+		// Active les inputes de la camera dans cette windows
 		camera.Inputs(window);
-		// Updates and exports the camera matrix to the Vertex Shader
+		// Met a jour la matrice de la camera
 		camera.updateMatrix(45.0f, 0.1f, 100.0f);
 
 
 
-		// Draws different meshes
+		// Affiche le model
 		model.Draw(shaderProgram, camera);
 
 
-		// Swap the back buffer with the front buffer
+		// Echange  front and back buffers
 		glfwSwapBuffers(window);
 		// Take care of all GLFW events
 		glfwPollEvents();
 	}
 
 
-	// Delete all the objects we've created
+	//Supprime tout les objets crées
 	shaderProgram.Delete();
-	// Delete window before ending the program
+	// Supprime la fenetre cree
 	glfwDestroyWindow(window);
-	// Terminate GLFW before ending the program
+	// Termine GLFW avant de quitter le programme
 	glfwTerminate();
 	return 0;
 }

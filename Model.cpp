@@ -235,13 +235,14 @@ std::vector<Texture> Model::getTextures()
 	std::string fileStr = std::string(file);
 	std::string fileDirectory = fileStr.substr(0, fileStr.find_last_of('/') + 1);
 
-	// Go over all images
+	// Boucle qui passe sur toutes les images du fichier glTF
 	for (unsigned int i = 0; i < JSON["images"].size(); i++)
 	{
-		// uri of current texture
+		// uri de la texture
 		std::string texPath = JSON["images"][i]["uri"];
 
-		// Check if the texture has already been loaded
+
+		// Verifie que la texture est pas deja utilisé
 		bool skip = false;
 		for (unsigned int j = 0; j < loadedTexName.size(); j++)
 		{
@@ -294,7 +295,7 @@ std::vector<Vertex> Model::assembleVertices
 			{
 				positions[i],
 				normals[i],
-				glm::vec3(1.0f, 1.0f, 1.0f),
+				//glm::vec3(1.0f, 1.0f, 1.0f),
 				texUVs[i]
 			}
 		);
@@ -302,6 +303,9 @@ std::vector<Vertex> Model::assembleVertices
 	return vertices;
 }
 
+
+
+//Converti un tableau de float en tableau de vec2, vec3 ou vec4
 std::vector<glm::vec2> Model::groupFloatsVec2(std::vector<float> floatVec)
 {
 	const unsigned int floatsPerVector = 2;
